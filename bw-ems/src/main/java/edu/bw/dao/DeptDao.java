@@ -18,4 +18,8 @@ public interface DeptDao {
     List<Map<String, Object>> selectBlyd(Integer id);
 
     Integer update(UpdateDeptForm bean);
+
+    boolean selectCanDelete(List<Integer> list);
+
+    Integer deleteDeptByIds(List<Integer> list);
 }

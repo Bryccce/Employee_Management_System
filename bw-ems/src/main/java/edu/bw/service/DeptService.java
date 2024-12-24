@@ -16,4 +16,6 @@ public interface DeptService {
     List<Map<String, Object>> selectBlyd(Integer id);
 
     Integer update(UpdateDeptForm bean);
+
+    Integer deleteDeptByIds(List<Integer> list);
 }

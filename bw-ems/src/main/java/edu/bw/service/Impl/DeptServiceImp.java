@@ -35,4 +35,13 @@ public class DeptServiceImp implements DeptService {
     public Integer update(UpdateDeptForm bean) {
         return dao.update(bean);
     }
+
+    @Override
+    public Integer deleteDeptByIds(List<Integer> list) {
+        Integer rows = 0;
+        if(dao.selectCanDelete(list)){
+            rows = dao.deleteDeptByIds(list);
+        }
+        return rows;
+    }
 }

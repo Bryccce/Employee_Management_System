@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DeptDaoImp implements DeptDao {
     QueryRunner qr = new QueryRunner(JDBCUtils.getDataSource());
@@ -103,6 +104,31 @@ public class DeptDaoImp implements DeptDao {
         try {
             return qr.update("UPDATE bw_zzy_dept SET dept_name=?, tel=?, email=?, `desc`=? WHERE id=?",
                     bean.getDeptName(), bean.getTel(), bean.getEmail(), bean.getDesc(), bean.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean selectCanDelete(List<Integer> list) {
+        StringBuilder sql = new StringBuilder("SELECT IF(SUM(temp.users) > 0,FALSE,TRUE) AS result FROM(SELECT COUNT(u.id) AS users FROM bw_zzy_dept d INNER JOIN bw_zzy_users u ON d.id=u.dept_id WHERE d.id IN (");
+        sql.append(list.stream().map(id -> "?").collect(Collectors.joining(", ")));
+        sql.append(") GROUP BY d.id) AS temp");
+        Long query = null;
+        try {
+            query = qr.query(sql.toString(), new ScalarHandler<Long>(), list.toArray());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return query == 1 ? true : false;
+    }
+
+    @Override
+    public Integer deleteDeptByIds(List<Integer> list) {
+        StringBuilder sql = new StringBuilder("DELETE FROM bw_zzy_dept WHERE id in (");
+        sql.append(list.stream().map(id -> "?").collect(Collectors.joining(", "))).append(")");
+        try {
+            return qr.update(sql.toString(), list.toArray());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

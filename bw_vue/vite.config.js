@@ -5,7 +5,7 @@ import viteSvgIcons from 'vite-plugin-svg-icons';
 module.exports = {
 	base: '/',
 	server: {
-		port: 5000,
+		port: 4000,
 		//是否弹出浏览器
 		open: false,
 		//允许跨域
