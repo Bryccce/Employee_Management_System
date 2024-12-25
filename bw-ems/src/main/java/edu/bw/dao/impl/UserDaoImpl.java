@@ -8,10 +8,12 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UserDaoImpl implements UserDao {
     QueryRunner qr = new QueryRunner(JDBCUtils.getDataSource());
@@ -118,6 +120,125 @@ public class UserDaoImpl implements UserDao {
 
         try {
             return qr.query(sql.toString(), new ScalarHandler<Long>(), queryParams.toArray());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Integer insert(User user) {
+        StringBuilder sql = new StringBuilder(" INSERT INTO bw_zzy_users SET ");
+        List<Object> insertParams = new ArrayList<>();
+        try {
+            //利用反射设置sql和值
+            for (Field declaredField : user.getClass().getDeclaredFields()) {
+                declaredField.setAccessible(true);
+                if (declaredField.get(user)!=null && !declaredField.get(user).equals("")) {
+                    if (declaredField.getName().equals("password")) {
+                        sql.append(" `password` = HEX(AES_ENCRYPT(?,?)), ");
+
+                        Field usernameField = user.getClass().getDeclaredField("username");
+                        usernameField.setAccessible(true);
+
+                        insertParams.add(declaredField.get(user));
+                        insertParams.add(usernameField.get(user));
+                    } else if (declaredField.getName().equals("deptId")) {
+                        sql.append(" dept_id = ?, ");
+                        insertParams.add(declaredField.get(user));
+                    }else if (declaredField.getName().equals("openId")) {
+                        sql.append(" open_id = ?, ");
+                        insertParams.add(declaredField.get(user));
+                    }else{
+                        //属性名和数据库的列名相同
+                        sql.append(declaredField.getName() + " = ?, ");
+                        insertParams.add(declaredField.get(user));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //INSERT INTO bw_zzy_users SET dept_id= ? , open_id=?, name=?,  .... photo=?,
+        //sql.toString().replaceAll(",\\s*$","") 去掉sql末尾的,空格
+        try {
+            return qr.update(sql.toString().replaceAll(",\\s*$",""),
+                    insertParams.toArray());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> selectById(Integer userId) {
+        try {
+            return qr.query("SELECT id, username, `name`, sex, tel, email, hiredate, role, dept_id AS deptId, status,\n" +
+                    "CONVERT(AES_DECRYPT(UNHEX(`password`),username),CHAR) AS password\n" +
+                    "FROM bw_zzy_users \n" +
+                    "WHERE id = ?", new MapListHandler(), userId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Integer update(User user) {
+        StringBuilder sql = new StringBuilder(" UPDATE bw_zzy_users SET ");
+        List<Object> updateParams = new ArrayList<>();
+
+        try {
+            //利用反射设置sql和值
+            for (Field declaredField : user.getClass().getDeclaredFields()) {
+                declaredField.setAccessible(true);
+                if (declaredField.get(user)!=null && !declaredField.get(user).equals("")) {
+                    if (declaredField.getName().equals("password")) {
+                        sql.append(" `password` = HEX(AES_ENCRYPT(?,?)), ");
+
+                        Field usernameField = user.getClass().getDeclaredField("username");
+                        usernameField.setAccessible(true);
+
+                        updateParams.add(declaredField.get(user));
+                        updateParams.add(usernameField.get(user));
+                    } else if (declaredField.getName().equals("deptId")) {
+                        sql.append(" dept_id = ?, ");
+                        updateParams.add(declaredField.get(user));
+                    }else if (declaredField.getName().equals("openId")) {
+                        sql.append(" open_id = ?, ");
+                        updateParams.add(declaredField.get(user));
+                    }else{
+                        //属性名和数据库的列名相同
+                        sql.append(declaredField.getName() + " = ?, ");
+                        updateParams.add(declaredField.get(user));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        sql.append(" WHERE id = ? ");
+        updateParams.add(user.getId());
+
+        //UPDATE bw_zzy_users SET username= ?,  password=?, ... photo=?, WHERE id = ?
+        //UPDATE bw_zzy_users SET username= ?,  password=?, ... photo=? WHERE id = ?
+        try {
+            return qr.update(sql.toString().replaceAll(",\\s*WHERE", " WHERE")
+                    , updateParams.toArray());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Integer deleteByIds(List ids) {
+        StringBuilder sql = new StringBuilder("DELETE FROM \n" +
+                "bw_zzy_users\n" +
+                "WHERE id in (");
+        sql.append(ids.stream().map(id -> "?").collect(Collectors.joining(", ")))
+                .append(")");
+
+        try {
+            return qr.update(sql.toString(), ids.toArray());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

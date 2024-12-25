@@ -1,8 +1,11 @@
 package edu.bw.service.Impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import edu.bw.dao.UserDao;
 import edu.bw.dao.impl.UserDaoImpl;
+import edu.bw.dto.InsertUserForm;
 import edu.bw.dto.SelectUserByConditionForm;
+import edu.bw.dto.UpdateUserForm;
 import edu.bw.pojo.User;
 import edu.bw.service.UserService;
 import edu.bw.utils.PageUtils;
@@ -26,5 +29,30 @@ public class UserServiceImpl implements UserService {
         int start = (bean.getPage() - 1) * bean.getLength();
         long count = userDao.selectUserByConditionCount(bean);
         return new PageUtils(list, count, start, bean.getLength());
+    }
+
+    @Override
+    public Integer insert(InsertUserForm insertUserForm) {
+        User user = new User();
+        BeanUtil.copyProperties(insertUserForm, user);
+        return userDao.insert(user);
+    }
+
+    @Override
+    public List<Map<String, Object>> selectById(Integer userId) {
+        return userDao.selectById(userId);
+    }
+
+    @Override
+    public Integer update(UpdateUserForm updateUserForm) {
+        User user = new User();
+        BeanUtil.copyProperties(updateUserForm, user);
+        user.setId(updateUserForm.getUserId());
+        return userDao.update(user);
+    }
+
+    @Override
+    public Integer deleteByIds(List ids) {
+        return userDao.deleteByIds(ids);
     }
 }

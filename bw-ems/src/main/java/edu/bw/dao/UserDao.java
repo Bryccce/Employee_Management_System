@@ -16,4 +16,12 @@ public interface UserDao {
     List<Map<String, Object>> selectUserByCondition(SelectUserByConditionForm bean);
 
     long selectUserByConditionCount(SelectUserByConditionForm bean);
+
+    Integer insert(User user);
+
+    List<Map<String, Object>> selectById(Integer userId);
+
+    Integer update(User user);
+
+    Integer deleteByIds(List ids);
 }
