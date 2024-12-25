@@ -4,6 +4,8 @@ import edu.bw.dao.UserDao;
 import edu.bw.dao.impl.UserDaoImpl;
 import edu.bw.pojo.User;
 import edu.bw.service.UserService;
+import edu.bw.utils.PageUtils;
+import edu.bw.web.user.SelectUserByCondition;
 
 import java.sql.SQLException;
 
@@ -13,5 +15,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Integer userLogin(User user) throws SQLException {
         return userDao.userLogin(user);
+    }
+
+    @Override
+    public PageUtils selectUserByCondition(SelectUserByCondition bean) {
+        return null;
     }
 }
