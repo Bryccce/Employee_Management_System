@@ -18,4 +18,6 @@ public interface DeptService {
     Integer update(UpdateDeptForm bean);
 
     Integer deleteDeptByIds(List<Integer> list);
+
+    List<Map<String, Object>> selectAllDept();
 }

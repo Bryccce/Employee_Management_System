@@ -22,4 +22,6 @@ public interface DeptDao {
     boolean selectCanDelete(List<Integer> list);
 
     Integer deleteDeptByIds(List<Integer> list);
+
+    List<Map<String, Object>> selectAllDept();
 }

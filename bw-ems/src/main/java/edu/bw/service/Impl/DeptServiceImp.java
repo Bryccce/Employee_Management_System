@@ -44,4 +44,9 @@ public class DeptServiceImp implements DeptService {
         }
         return rows;
     }
+
+    @Override
+    public List<Map<String, Object>> selectAllDept() {
+        return dao.selectAllDept();
+    }
 }

@@ -50,4 +50,9 @@ public class RoleServiceImp implements RoleService {
         }
         return rows;
     }
+
+    @Override
+    public List<Map<String, Object>> selectAllRole() {
+        return roleDao.selectAllRole();
+    }
 }

@@ -140,4 +140,15 @@ public class RoleRaoImpl implements RoleDao {
         }
     }
 
+    @Override
+    public List<Map<String, Object>> selectAllRole() {
+        try {
+            return queryRunner.query("SELECT id, role_name AS roleName \n" +
+                    "FROM bw_zzy_role \n" +
+                    "ORDER BY id", new MapListHandler());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

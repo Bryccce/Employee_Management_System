@@ -2,6 +2,7 @@ package edu.bw.web.user;
 
 import cn.hutool.json.JSONUtil;
 import edu.bw.common.CommonResult;
+import edu.bw.dto.SelectUserByConditionForm;
 import edu.bw.service.Impl.UserServiceImpl;
 import edu.bw.service.UserService;
 import edu.bw.utils.PageUtils;
@@ -17,7 +18,7 @@ public class SelectUserByCondition extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String s = request.getReader().readLine();
-        SelectUserByCondition bean = JSONUtil.toBean(s, SelectUserByCondition.class);
+        SelectUserByConditionForm bean = JSONUtil.toBean(s, SelectUserByConditionForm.class);
         PageUtils pageUtils = us.selectUserByCondition(bean);
         response.getWriter().write(JSONUtil.toJsonStr(CommonResult.ok().put("page", pageUtils)));
     }

@@ -1,6 +1,7 @@
 package edu.bw.dao.impl;
 
 import edu.bw.dao.UserDao;
+import edu.bw.dto.SelectUserByConditionForm;
 import edu.bw.pojo.User;
 import org.junit.Test;
 
@@ -15,4 +16,12 @@ public class UserDaoImplTest {
     }
 
 
+    @Test
+    public void selectUserByCondition() {
+    }
+
+    @Test
+    public void selectUserByConditionCount() {
+        System.out.println(userDao.selectUserByConditionCount(new SelectUserByConditionForm()));
+    }
 }

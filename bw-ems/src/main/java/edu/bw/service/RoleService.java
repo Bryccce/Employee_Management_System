@@ -19,4 +19,6 @@ public interface RoleService {
     Integer update(UpdateRoleForm bean);
 
     int deleteRoleByIds(List<Integer> list);
+
+    List<Map<String, Object>> selectAllRole();
 }

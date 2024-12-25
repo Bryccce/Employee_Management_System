@@ -23,4 +23,6 @@ public interface RoleDao {
     boolean countDeleteRoleByIds(List<Integer> list);
 
     int deleteRoleByIds(List<Integer> list);
+
+    List<Map<String, Object>> selectAllRole();
 }

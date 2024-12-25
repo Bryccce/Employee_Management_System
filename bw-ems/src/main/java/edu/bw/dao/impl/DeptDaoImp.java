@@ -133,4 +133,15 @@ public class DeptDaoImp implements DeptDao {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<Map<String, Object>> selectAllDept() {
+        try {
+            return qr.query("SELECT id, dept_name AS deptName\n" +
+                    "FROM bw_zzy_dept\n" +
+                    "ORDER BY id",new MapListHandler());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
